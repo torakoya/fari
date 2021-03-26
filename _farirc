@@ -1,0 +1,12 @@
+# Avoid unexpected behavior
+export LC_ALL=C
+
+# If the environment's /tmp is too small
+#export TMPDIR="$HOME"/tmp
+
+#archhome=
+rechome=~/doc/fari-recipes
+
+# User-defined variables; used in recipes
+prefix=/opt
+optflags=-O2

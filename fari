@@ -1,0 +1,197 @@
+#!/bin/sh
+
+progname=${0##*/}
+
+usage () {
+    cat <<EOS
+Usage: $progname PACKAGE [TASK [ARG]...]
+
+Tasks:
+  fetch    Download the source
+  extract  Extract the source archive
+  patch    Modify the source code
+  config   Prepare the source code for building
+  build    Build the source code
+  test     Test the builds
+  install  Install the builds
+EOS
+}
+
+if [ $# -eq 0 ]; then
+    usage >&2
+    exit 2
+fi
+
+# Define the default tasks
+
+_fetch () {
+    if [ "$1" ]; then
+        url="$1"
+    else
+        if [ "$archhome" ]; then
+            file=$(find "$archhome" -name "$pkgfile" | head -n1)
+            [ "$file" ] && return
+        fi
+
+        url="$pkgurl"
+
+        if [ ! "$url" ]; then
+            "$progname: $pkgname: pkgurl missing"
+            exit 2
+        fi
+    fi
+
+    mkdir -p "$fetched_cachedir"
+    if type wget > /dev/null; then
+        cd "$fetched_cachedir" && wget -c -O "$pkgfile" "$url"
+    else
+        cd "$fetched_cachedir" && { rm -f "$pkgfile"; curl -LR -o "$pkgfile" "$url"; }
+    fi
+}
+
+_extract () {
+    if [ "$1" ]; then
+        file="$1"
+    else
+        file="$fetched_cachedir/$pkgfile"
+        if [ ! -e "$file" ]; then
+            file=$(find "$archhome" -name "$pkgfile" | head -n1)
+            if [ ! "$file" ]; then
+                echo "$progname: $pkgfile: not found" >&2
+                exit 2
+            fi
+        fi
+    fi
+
+    tar -xaf "$file" -C "$workdir"
+}
+
+_patch () {
+    :
+}
+
+_config () {
+    ./configure --prefix="$prefix" "$@"
+}
+
+_build () {
+    make "$@"
+}
+
+_test () {
+    make check "$@"
+}
+
+_install () {
+    make install "$@"
+}
+
+# Define the utility functions
+
+fr_avoid_rpath () {
+    sed -i.orig \
+        -e 's/\(runpath_var=\)\$.*/\1/' \
+        -e 's/\(hardcode_libdir_flag_spec=\)\$.*/\1/' \
+        "$@"
+}
+
+# Setup
+
+[ -e ~/.farirc ] && . ~/.farirc
+
+: "${workdir:=$PWD/x}"
+: "${cachedir:=${XDG_CACHE_HOME:-$HOME/.cache}/fari}"
+fetched_cachedir="$cachedir"/fetched
+
+[ "$TMPDIR" ] && mkdir -p "$TMPDIR"
+
+# Parse the arguments
+
+recname="$1"
+shift
+
+if [ $# -ge 1 ]; then
+    target="$1"
+    shift
+else
+    target=build
+fi
+
+if [ "$target" != "${target#re*}" ]; then
+    target=${target#re*}
+    target_force=1
+fi
+
+# Read the recipe
+
+if [ "$recname" = . ]; then
+    recdir=.
+else
+    recdir=$(find "$rechome" -name "$recname" | head -n1)
+fi
+
+if [ ! "$recdir" ]; then
+    echo "$progname: $recname: no recipe" >&2
+    exit 2
+fi
+
+recfile="$recdir"/recipe
+
+. "$recfile"
+
+: "${pkgfile:=$pkgname-$pkgver.$pkgext}"
+: "${pkgurl:=$pkgurlbase$pkgfile}"
+
+srcdir="$workdir/$pkgname-$pkgver"
+: "${blddir:=$srcdir}"
+
+# Run the tasks
+
+fr_log_task () {
+    date +'FARI:START %Y-%m-%d %H:%M:%S'
+    fr_start=$(date +%s)
+    "$@"
+    x=$?
+    date +'FARI:END %Y-%m-%d %H:%M:%S'
+    fr_end=$(date +%s)
+    echo "FARI:TIME $((fr_end - fr_start))s"
+    echo "FARI:EXIT $x"
+    return $x
+}
+
+mkdir -p "$workdir"
+
+case "$target" in
+fetch|extract|patch|config|build|test|install)
+    for task in fetch extract patch config build test install; do
+        donefile="$workdir/.$task-done"
+
+        if [ ! -e "$donefile" -o \( "$target_force" -a "$task" = "$target" \) ]; then
+            case "$task" in
+            fetch|extract)
+                _"$task" "$@"
+                xs=$?
+                ;;
+            patch)
+                cd "$srcdir" && _"$task" "$@"
+                xs=$?
+                ;;
+            *)
+                logfile="$workdir/$task-$(date +%Y%m%d%H%M%S).log"
+                exec 4>&1
+                xs=$({ { cd "$blddir" && fr_log_task _"$task" "$@"; echo $? 1>&3; } 2>&1 | tee "$logfile" 1>&4; } 3>&1)
+                exec 4>&-
+                ;;
+            esac
+            [ "$xs" != 0 ] && exit "$xs"
+        fi
+
+        touch "$donefile"
+        [ "$task" = "$target" ] && break
+    done
+    ;;
+*)
+    echo "$progname: $target: undefined task" >&2
+    exit 2
+    ;;
+esac
