@@ -12,6 +12,8 @@ Fari is a Unix tool for managing software building procedures. It can:
 
 ## Getting Started
 
+Place the executable `fari` somewhere in `$PATH`.
+
 Write `~/.farirc`. See `_farirc` for a sample.
 
 Make a directory for a package, `foobar`, and get into it.
