@@ -139,6 +139,7 @@ recfile="$recdir"/recipe
 
 . "$recfile"
 
+: "${pkgext:=tar.gz}"
 : "${pkgfile:=$pkgname-$pkgver.$pkgext}"
 : "${pkgurl:=$pkgurlbase$pkgfile}"
 

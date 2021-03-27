@@ -80,7 +80,7 @@ See `fari` for the default task functions.
 
 * `pkgname`: The package name.
 * `pkgver`: The package version.
-* `pkgext`: (Optional) Used for determining `pkgfile`.
+* `pkgext`: (Optional) Used for determining `pkgfile`. The default is `tar.gz`.
 * `pkgfile`: (Optional) The locally saved tarball's file name. The default is `pkgname-pkgver.pkgext`.
 * `pkgurlbase`: (Optional) Used for determining `pkgurl`.
 * `pkgurl`: The URL of the source archive. The default is `{pkgurlbase}{pkgfile}`
