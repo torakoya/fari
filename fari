@@ -97,7 +97,13 @@ fr_avoid_rpath () {
 
 # Setup
 
-[ -e ~/.farirc ] && . ~/.farirc
+if [ "$SUDO_USER" ]; then
+    homedir="$(eval echo ~"$SUDO_USER")"
+else
+    homedir="$HOME"
+fi
+
+[ -e "$homedir"/.farirc ] && . "$homedir"/.farirc
 
 : "${workdir:=$PWD/x}"
 : "${cachedir:=${XDG_CACHE_HOME:-$HOME/.cache}/fari}"
