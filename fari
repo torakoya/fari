@@ -198,7 +198,11 @@ fetch|extract|patch|config|build|test|install)
     done
     ;;
 *)
-    echo "$progname: $target: undefined task" >&2
-    exit 2
+    if type _fr_"$target" > /dev/null; then
+        _fr_"$target" "$@"
+    else
+        echo "$progname: $target: undefined task" >&2
+        exit 2
+    fi
     ;;
 esac

@@ -87,3 +87,15 @@ See `fari` for the default task functions.
 * `srcname`: (Optional) The directory name that contains the extracted tarball. The default is `pkgname-pkgver`.
 * `srcdir`: (Optional) Where the source code is located. The default is `workdir/srcname`.
 * `blddir`: (Optional) Where you perform `config`, `build`, etc. The default is the same as `srcdir`.
+
+## User-defined Tasks
+
+When you want to define your own task, write an `_fr_` prefixed function in the recipe:
+
+    _fr_conffile () {
+        echo "set debug=yes" > ~/.foobarrc
+    }
+
+And invoke it like this:
+
+    $ fari . conffile
