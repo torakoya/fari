@@ -95,6 +95,12 @@ fr_avoid_rpath () {
         "$@"
 }
 
+# Echo and invoke the given command line
+fr_do () {
+    echo "$@"
+    eval "$@"
+}
+
 # Setup
 
 if [ "$SUDO_USER" ]; then
