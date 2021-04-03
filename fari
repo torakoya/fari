@@ -29,23 +29,23 @@ _fetch () {
         url="$1"
     else
         if [ "$archome" ]; then
-            file=$(find "$archome" -name "$pkgfile" | head -n1)
+            file=$(find "$archome" -name "$arcfile" | head -n1)
             [ "$file" ] && return
         fi
 
-        url="$pkgurl"
+        url="$arcurl"
 
         if [ ! "$url" ]; then
-            "$progname: $pkgname: pkgurl missing"
+            "$progname: $pkgname: arcurl missing"
             exit 2
         fi
     fi
 
     mkdir -p "$fetched_cachedir"
     if type wget > /dev/null; then
-        cd "$fetched_cachedir" && wget -c -O "$pkgfile" "$url"
+        cd "$fetched_cachedir" && wget -c -O "$arcfile" "$url"
     else
-        cd "$fetched_cachedir" && { rm -f "$pkgfile"; curl -LR -o "$pkgfile" "$url"; }
+        cd "$fetched_cachedir" && { rm -f "$arcfile"; curl -LR -o "$arcfile" "$url"; }
     fi
 }
 
@@ -53,11 +53,11 @@ _extract () {
     if [ "$1" ]; then
         file="$1"
     else
-        file="$fetched_cachedir/$pkgfile"
+        file="$fetched_cachedir/$arcfile"
         if [ ! -e "$file" ]; then
-            file=$(find "$archome" -name "$pkgfile" | head -n1)
+            file=$(find "$archome" -name "$arcfile" | head -n1)
             if [ ! "$file" ]; then
-                echo "$progname: $pkgfile: not found" >&2
+                echo "$progname: $arcfile: not found" >&2
                 exit 2
             fi
         fi
@@ -151,11 +151,12 @@ recfile="$recdir"/recipe
 
 . "$recfile"
 
-: "${pkgext:=tar.gz}"
-: "${pkgfile:=$pkgname-$pkgver.$pkgext}"
-: "${pkgurl:=$pkgurlbase$pkgfile}"
+: "${srcname:=$pkgname-$pkgver}"
+: "${arcext:=tar.gz}"
+: "${arcfile:=$srcname.$arcext}"
+: "${arcurl:=$arcurlbase$arcfile}"
 
-srcdir="$workdir/$pkgname-$pkgver"
+srcdir="$workdir/$srcname"
 : "${blddir:=$srcdir}"
 
 # Run the tasks

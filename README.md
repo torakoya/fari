@@ -22,8 +22,8 @@ Write a recipe, named `recipe`:
 
     pkgname=foobar
     pkgver=1.2.3
-    pkgext=tar.gz
-    pkgurlbase=https://www.example.org/foobar/download/
+    arcext=tar.gz
+    arcurlbase=https://www.example.org/foobar/download/
     
     _config () {
         ./configure --prefix="$prefix"
@@ -80,10 +80,10 @@ See `fari` for the default task functions.
 
 * `pkgname`: The package name.
 * `pkgver`: The package version.
-* `pkgext`: (Optional) Used for determining `pkgfile`. The default is `tar.gz`.
-* `pkgfile`: (Optional) The locally saved tarball's file name. The default is `pkgname-pkgver.pkgext`.
-* `pkgurlbase`: (Optional) Used for determining `pkgurl`.
-* `pkgurl`: The URL of the source archive. The default is `{pkgurlbase}{pkgfile}`
+* `arcext`: (Optional) Used for determining `arcfile`. The default is `tar.gz`.
+* `arcfile`: (Optional) The locally saved tarball's file name. The default is `srcname.arcext`.
+* `arcurlbase`: (Optional) Used for determining `arcurl`.
+* `arcurl`: The URL of the source archive. The default is `{arcurlbase}{arcfile}`
 * `srcname`: (Optional) The directory name that contains the extracted tarball. The default is `pkgname-pkgver`.
 * `srcdir`: (Optional) Where the source code is located. The default is `workdir/srcname`.
 * `blddir`: (Optional) Where you perform `config`, `build`, etc. The default is the same as `srcdir`.
