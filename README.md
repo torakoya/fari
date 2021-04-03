@@ -71,7 +71,7 @@ See `fari` for the default task functions.
 
 ### Defined in farirc
 
-* `archhome`: (Optional) Where the prefetched tarballs are located.
+* `archome`: (Optional) Where the prefetched tarballs are located.
 * `cachedir`: (Optional) Where a fetched tarball will be stored. The default is `$XDG_CACHE_HOME/fari` or `~/.cache/fari`.
 * `rechome`: Where the recipes are located.
 * `workdir`: (Optional) Where the tasks are performed. The default is `$PWD/x`.

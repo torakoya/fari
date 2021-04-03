@@ -28,8 +28,8 @@ _fetch () {
     if [ "$1" ]; then
         url="$1"
     else
-        if [ "$archhome" ]; then
-            file=$(find "$archhome" -name "$pkgfile" | head -n1)
+        if [ "$archome" ]; then
+            file=$(find "$archome" -name "$pkgfile" | head -n1)
             [ "$file" ] && return
         fi
 
@@ -55,7 +55,7 @@ _extract () {
     else
         file="$fetched_cachedir/$pkgfile"
         if [ ! -e "$file" ]; then
-            file=$(find "$archhome" -name "$pkgfile" | head -n1)
+            file=$(find "$archome" -name "$pkgfile" | head -n1)
             if [ ! "$file" ]; then
                 echo "$progname: $pkgfile: not found" >&2
                 exit 2

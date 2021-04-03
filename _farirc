@@ -4,7 +4,7 @@ export LC_ALL=C
 # If the environment's /tmp is too small
 #export TMPDIR="$HOME"/tmp
 
-#archhome=
+#archome=
 rechome=~/doc/fari-recipes
 
 # User-defined variables; used in recipes
