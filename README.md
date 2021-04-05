@@ -39,7 +39,9 @@ Fari's command line syntax is:
 
     $ fari PACKAGE TASK
 
-The tasks is one of these:
+There are two types of tasks: building tasks and utility tasks.
+
+The building tasks are these:
 
 * `fetch`: Download the source
 * `extract`: Extract the source archive
@@ -50,6 +52,8 @@ The tasks is one of these:
 * `install`: Install the builds
 
 The undone tasks are performed automatically in this order.
+
+There is, for the moment, only one utility task: `reg`. It registers the installed files.
 
 Those tasks are performed only once. If you want to perform a finished task again, add the prefix `re`:
 
@@ -75,6 +79,8 @@ See `fari` for the default task functions.
 * `cachedir`: (Optional) Where a fetched tarball will be stored. The default is `$XDG_CACHE_HOME/fari` or `~/.cache/fari`.
 * `rechome`: Where the recipes are located.
 * `workdir`: (Optional) Where the tasks are performed. The default is `$PWD/x`.
+* `prefix`: (Optional) Where the software is installed. The default is `/usr/local`.
+* `regdir`: (Optional) Where the installed software packing lists are located. The default is `prefix/var/lib/fari`.
 
 ### Defined in Recipes
 
@@ -99,3 +105,17 @@ When you want to define your own task, write an `_fr_` prefixed function in the 
 And invoke it like this:
 
     $ fari . conffile
+
+## files
+
+When you want to perform the task `reg`, you must create the file `files` that contains a sorted list of the installed files, symlinks and directories:
+
+    bin/foobar
+    include/foobar.h
+    lib/libfoobar.so
+    lib/libfoobar.so.1
+    lib/libfoobar.so.1.2.3
+    share/doc/foobar
+    share/doc/foobar/LICENCE
+    share/doc/foobar/README
+    share/man/man1/foobar.1

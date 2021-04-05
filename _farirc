@@ -6,7 +6,11 @@ export LC_ALL=C
 
 #archome=
 rechome=~/doc/fari-recipes
+prefix=/usr/local
+
+# nonempty strings mean yes, an empty string means no
+install_strip=1
+install_gzip=1
 
 # User-defined variables; used in recipes
-prefix=/opt
 optflags=-O2

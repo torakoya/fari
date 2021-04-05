@@ -6,7 +6,7 @@ usage () {
     cat <<EOS
 Usage: $progname PACKAGE [TASK [ARG]...]
 
-Tasks:
+Building Tasks:
   fetch    Download the source
   extract  Extract the source archive
   patch    Modify the source code
@@ -14,6 +14,9 @@ Tasks:
   build    Build the source code
   test     Test the builds
   install  Install the builds
+
+Utility Tasks:
+  reg      Register the installed files
 EOS
 }
 
@@ -86,6 +89,62 @@ _install () {
     make install "$@"
 }
 
+_reg () {
+    if [ ! -e "$workdir/.install-done" ]; then
+        echo "$progname: not installed yet" >&2
+        return 2
+    fi
+
+    if [ -e "$regfile" -a ! "$target_force" ]; then
+        echo "$progname: $regfile: already exists" >&2
+        return 2
+    fi
+
+    cat "$recdir"/files | while read -r f; do
+        [ "${f#/}" = "$f" ] && f="$prefix/$f"
+
+        # Strip a binary
+        if [ "$install_strip" ]; then
+            if [ "$f%.o" != "$f" ]; then
+                if file "$f" | grep -q 'not stripped'; then
+                    strip -p "$f"
+                fi
+            fi
+        fi
+
+        # Gzip a man/info page
+        if [ "$install_gzip" ]; then
+            if [ \( "${f#*/man/}" != "$f" -o "${f#*/info/}" != "$f" \) -a "${f%.gz}" = "$f" ]; then
+                if [ -L "$f" ]; then
+                    linkto=$(readlink "$f")
+                    rm -f "$f"
+                    ln -sf "$linkto.gz" "$f".gz
+                    f="$f.gz"
+                elif [ -f "$f" ]; then
+                    gzip -9nf "$f"
+                    f="$f.gz"
+                elif [ ! -e "$f" -a -e "$f.gz" ]; then
+                    # Maybe invoked again, that should be accepted
+                    echo "$progname: warning: $f: not found, regarded as $f.gz" >&2
+                    f="$f.gz"
+                fi
+            fi
+        fi
+
+        # Create the registration file
+        fn="${f#$prefix/}"
+        if [ -L "$f" ]; then
+            echo "L $fn"
+        elif [ -f "$f" ]; then
+            echo "$(md5sum "$f" | sed 's/ .*//') $fn"
+        elif [ -d "$f" ]; then
+            echo "D $fn"
+        else
+            echo "$progname: warning: $f: not found" >&2
+        fi
+    done > "$regfile"
+}
+
 # Define the utility functions
 
 fr_avoid_rpath () {
@@ -114,6 +173,8 @@ fi
 : "${workdir:=$PWD/x}"
 : "${cachedir:=${XDG_CACHE_HOME:-$HOME/.cache}/fari}"
 fetched_cachedir="$cachedir"/fetched
+: "${prefix:=/usr/local}"
+: "${regdir:=$prefix/var/lib/fari}"
 
 [ "$TMPDIR" ] && mkdir -p "$TMPDIR"
 
@@ -129,8 +190,8 @@ else
     target=build
 fi
 
-if [ "$target" != "${target#re*}" ]; then
-    target=${target#re*}
+if [ "$target" != "${target#re}" ] && [ "$target" != reg ]; then
+    target=${target#re}
     target_force=1
 fi
 
@@ -158,6 +219,8 @@ recfile="$recdir"/recipe
 
 srcdir="$workdir/$srcname"
 : "${blddir:=$srcdir}"
+
+regfile="$regdir/$pkgname-$pkgver"
 
 # Run the tasks
 
@@ -203,6 +266,9 @@ fetch|extract|patch|config|build|test|install)
         touch "$donefile"
         [ "$task" = "$target" ] && break
     done
+    ;;
+reg)
+    _"$target" "$@"
     ;;
 *)
     if type _fr_"$target" > /dev/null; then
