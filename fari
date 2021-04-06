@@ -217,7 +217,7 @@ recfile="$recdir"/recipe
 : "${arcfile:=$srcname.$arcext}"
 : "${arcurl:=$arcurlbase$arcfile}"
 
-srcdir="$workdir/$srcname"
+: "${srcdir:=$workdir/$srcname}"
 : "${blddir:=$srcdir}"
 
 regfile="$regdir/$pkgname-$pkgver"
