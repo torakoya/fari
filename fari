@@ -17,6 +17,7 @@ Building Tasks:
 
 Utility Tasks:
   reg      Register the installed files
+  del      Delete the registered files
 EOS
 }
 
@@ -145,6 +146,42 @@ _reg () {
     done > "$regfile"
 }
 
+_del () {
+    if [ ! -e "$regfile" ]; then
+        echo "$progname: $regfile: not found" >&2
+        return 2
+    fi
+
+    sed -n '1!G;h;$p' "$regfile" | while read -r sum file; do
+        [ "${file#/}" = "$file" ] && file=$prefix/$file
+        case "$sum" in
+        D)
+            rmdir "$file"
+            ;;
+        L)
+            rm "$file"
+            ;;
+        *)
+            if type md5sum > /dev/null; then
+                if echo "$sum $file" | md5sum -c --status; then
+                    rm "$file"
+                else
+                    echo "$progname: warning: $file: checksum mismatch" >&2
+                fi
+            elif type md5 > /dev/null; then
+                sum2=$(md5 < "$file")
+                if [ "$sum" = "$sum2" ]; then
+                    rm "$file"
+                else
+                    echo "$progname: warning: $file: checksum mismatch" >&2
+                fi
+            fi
+            ;;
+        esac
+    done
+    rm -f "$regfile"
+}
+
 # Define the utility functions
 
 fr_avoid_rpath () {
@@ -268,7 +305,7 @@ fetch|extract|patch|config|build|test|install)
         [ "$task" = "$target" ] && break
     done
     ;;
-reg)
+reg|del)
     _"$target" "$@"
     ;;
 *)

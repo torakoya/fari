@@ -53,9 +53,12 @@ The building tasks are these:
 
 The undone tasks are performed automatically in this order.
 
-There is, for the moment, only one utility task: `reg`. It registers the installed files.
+The utility tasks are these:
 
-Those tasks are performed only once. If you want to perform a finished task again, add the prefix `re`:
+* `reg`: Register the installed files
+* `del`: Delete the registered files
+
+Most tasks are performed only once. If you want to perform a finished task again, add the prefix `re`:
 
     $ fari foobar rebuild
 
