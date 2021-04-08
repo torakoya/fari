@@ -210,10 +210,11 @@ fi
 
 recfile="$recdir"/recipe
 
+arcext=tar.gz
+
 . "$recfile"
 
 : "${srcname:=$pkgname-$pkgver}"
-: "${arcext:=tar.gz}"
 : "${arcfile:=$srcname.$arcext}"
 : "${arcurl:=$arcurlbase$arcfile}"
 
