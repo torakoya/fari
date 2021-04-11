@@ -234,6 +234,12 @@ fi
 
 # Read the recipe
 
+if [ "${recname%%@*}" != "$recname" ]; then
+    pkgverx="${recname#*@}"
+    recname="${recname%%@*}"
+    : "${recname:=.}"
+fi
+
 if [ "$recname" = . ]; then
     recdir="$PWD"
 else
@@ -250,6 +256,8 @@ recfile="$recdir"/recipe
 arcext=tar.gz
 
 . "$recfile"
+
+[ "$pkgverx" ] && pkgver=$pkgverx # Note $pkgver's in the recipe still remain old
 
 : "${srcname:=$pkgname-$pkgver}"
 : "${arcfile:=$srcname.$arcext}"

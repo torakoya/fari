@@ -68,6 +68,12 @@ When the `recipe` is at the current working directory, you can specify it as `.`
 
     $ fari . build
 
+If you want to specify `$pkgver` instead of getting from the recipe, use `@` following `$pkgname`:
+
+* `foobar@1.2.3`
+* `.@1.2.3`
+* `@1.2.3` (You can omit `.` followed by `@`)
+
 ## Recipe Syntax
 
 Fari recipes are just Bourne shell scripts.
