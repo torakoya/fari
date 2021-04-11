@@ -235,7 +235,7 @@ fi
 # Read the recipe
 
 if [ "$recname" = . ]; then
-    recdir=.
+    recdir="$PWD"
 else
     recdir=$(find "$rechome" -name "$recname" | head -n1)
 fi
