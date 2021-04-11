@@ -18,6 +18,7 @@ Building Tasks:
 Utility Tasks:
   reg      Register the installed files
   del      Delete the registered files
+  pack     Create a tarball containing the registered files
 EOS
 }
 
@@ -182,6 +183,21 @@ _del () {
     rm -f "$regfile"
 }
 
+_pack () {
+    if [ ! -e "$regfile" ]; then
+        echo "$progname: $regfile: not found" >&2
+        return 2
+    fi
+
+    for s in "$@"; do
+        if [ "$s" = -n ]; then
+            ownerargs='--numeric-owner --owner=:0 --group=:0'
+        fi
+    done
+
+    sed 's/[^ ]* //' "$regfile" | tar -cf - -C "$prefix" --no-recursion -T- $ownerargs | gzip -9n > "$pkgname-$pkgver".tgz
+}
+
 # Define the utility functions
 
 fr_avoid_rpath () {
@@ -313,7 +329,7 @@ fetch|extract|patch|config|build|test|install)
         [ "$task" = "$target" ] && break
     done
     ;;
-reg|del)
+reg|del|pack)
     _"$target" "$@"
     ;;
 *)

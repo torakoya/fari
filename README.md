@@ -57,6 +57,7 @@ The utility tasks are these:
 
 * `reg`: Register the installed files
 * `del`: Delete the registered files
+* `pack`: Create a tarball containing the registered files
 
 Most tasks are performed only once. If you want to perform a finished task again, add the prefix `re`:
 
