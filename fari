@@ -275,9 +275,10 @@ arcext=tar.gz
 
 [ "$pkgverx" ] && pkgver=$pkgverx # Note $pkgver's in the recipe still remain old
 
-: "${srcname:=$pkgname-$pkgver}"
-: "${arcfile:=$srcname.$arcext}"
-: "${arcurl:=$arcurlbase$arcfile}"
+: "${arcname:=$pkgname}"  # Archive basename
+: "${srcname:=$arcname-$pkgver}"  # Extracted directory name
+: "${arcfile:=$arcname-$pkgver.$arcext}"  # Archive file name
+: "${arcurl:=$arcurlbase$arcfile}"  # Archive URL
 
 : "${srcdir:=$workdir/$srcname}"
 : "${blddir:=$srcdir}"

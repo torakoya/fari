@@ -96,11 +96,12 @@ See `fari` for the default task functions.
 
 * `pkgname`: The package name.
 * `pkgver`: The package version.
+* `arcname`: (Optional) The archive's basename. The default is `pkgname`.
 * `arcext`: (Optional) Used for determining `arcfile`. The default is `tar.gz`.
-* `arcfile`: (Optional) The locally saved tarball's file name. The default is `srcname.arcext`.
+* `arcfile`: (Optional) The locally saved tarball's file name. The default is `arcname-pkgver.arcext`.
 * `arcurlbase`: (Optional) Used for determining `arcurl`.
 * `arcurl`: The URL of the source archive. The default is `{arcurlbase}{arcfile}`
-* `srcname`: (Optional) The directory name that contains the extracted tarball. The default is `pkgname-pkgver`.
+* `srcname`: (Optional) The directory name that contains the extracted tarball. The default is `arcname-pkgver`.
 * `srcdir`: (Optional) Where the source code is located. The default is `workdir/srcname`.
 * `blddir`: (Optional) Where you perform `config`, `build`, etc. The default is the same as `srcdir`.
 
