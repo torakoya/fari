@@ -102,6 +102,7 @@ _reg () {
         return 2
     fi
 
+    mkdir -p "$regdir"
     cat "$recdir"/files | while read -r f; do
         [ "${f#/}" = "$f" ] && f="$prefix/$f"
 
