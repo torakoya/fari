@@ -326,6 +326,8 @@ fetch|extract|patch|config|build|test|install)
                     done
                 fi
 
+                mkdir -p "$blddir"
+
                 logfile="$workdir/$task-$(date +%Y%m%d%H%M%S).log"
                 exec 4>&1
                 xs=$({ { cd "$blddir" && fr_log_task _"$task" "$@"; echo $? 1>&3; } 2>&1 | tee "$logfile" 1>&4; } 3>&1)
