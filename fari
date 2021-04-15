@@ -108,7 +108,7 @@ _reg () {
 
         # Strip a binary
         if [ "$install_strip" ]; then
-            if [ "$f%.o" != "$f" ]; then
+            if [ "${f%.o}" = "$f" ]; then
                 if file "$f" | grep -q 'not stripped'; then
                     strip -p "$f"
                 fi
