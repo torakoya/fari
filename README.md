@@ -55,6 +55,7 @@ The undone tasks are performed automatically in this order.
 
 The utility tasks are these:
 
+* `files`: Create the file `files`
 * `reg`: Register the installed files
 * `del`: Delete the registered files
 * `pack`: Create a tarball containing the registered files
@@ -130,3 +131,8 @@ When you want to perform the task `reg`, you must create the file `files` that c
     share/doc/foobar/LICENCE
     share/doc/foobar/README
     share/man/man1/foobar.1
+
+You can create `files` with the command `files`:
+
+    $ fari . install DESTDIR=$(pwd)/dest
+    $ fari . files dest

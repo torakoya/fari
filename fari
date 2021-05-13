@@ -16,6 +16,7 @@ Building Tasks:
   install  Install the builds
 
 Utility Tasks:
+  files    Create "files"
   reg      Register the installed files
   del      Delete the registered files
   pack     Create a tarball containing the registered files
@@ -89,6 +90,42 @@ _test () {
 
 _install () {
     make install "$@"
+}
+
+_files () {
+    if [ $# -eq 0 ]; then
+        echo "Usage: $progname RECIPE files DESTDIR" >&2
+        exit 2
+    fi
+
+    find "$1$prefix" | sed -e 's|^'"$1$prefix"'/\{0,1\}||' -e '
+        /^$/ d
+        /^bin$/ d
+        /^etc$/ d
+        /^include$/ d
+        /^lib$/ d
+        /^lib\/pkgconfig$/ d
+        /^libexec$/ d
+        /^sbin$/ d
+        /^share$/ d
+        /^share\/aclocal$/ d
+        /^share\/doc$/ d
+        /^share\/info$/ d
+        /^share\/info\/dir$/ d
+        /^share\/info\/locale$/ d
+        /^share\/info\/locale\/[^/]*$/ d
+        /^share\/man$/ d
+        /^share\/man\/\([^/]*\/\)\{0,1\}man[0-9ln]$/ d
+        /^var$/ d
+        /^var\/db$/ d
+        /^var\/lib$/ d
+    ' | sort > files &&
+
+    fr_post_files "$@"
+}
+
+fr_post_files () {
+    :
 }
 
 _reg () {
@@ -341,7 +378,7 @@ fetch|extract|patch|config|build|test|install)
         [ "$task" = "$target" ] && break
     done
     ;;
-reg|del|pack)
+files|reg|del|pack)
     _"$target" "$@"
     ;;
 *)
