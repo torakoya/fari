@@ -344,7 +344,17 @@ fetch|extract|patch|config|build|test|install)
     for task in fetch extract patch config build test install; do
         donefile="$workdir/.$task-done"
 
-        if [ ! -e "$donefile" -o \( "$target_force" -a "$task" = "$target" \) ]; then
+        if [ "$task" = install ]; then
+            for s in "$@"; do
+                if [ "$s" != "${s#DESTDIR=}" ]; then
+                    DESTDIR=${s#DESTDIR=}
+                fi
+            done
+        fi
+
+        if [ ! -e "$donefile" \
+                -o \( "$target_force" -a "$task" = "$target" \) \
+                -o \( "$task" = install -a "$DESTDIR" \) ]; then
             case "$task" in
             fetch|extract)
                 _"$task" "$@"
@@ -355,14 +365,6 @@ fetch|extract|patch|config|build|test|install)
                 xs=$?
                 ;;
             *)
-                if [ "$task" = install ]; then
-                    for s in "$@"; do
-                        if [ "$s" != "${s#DESTDIR=}" ]; then
-                            DESTDIR=${s#DESTDIR=}
-                        fi
-                    done
-                fi
-
                 mkdir -p "$blddir"
 
                 logfile="$workdir/$task-$(date +%Y%m%d%H%M%S).log"
@@ -374,7 +376,9 @@ fetch|extract|patch|config|build|test|install)
             [ "$xs" != 0 ] && exit "$xs"
         fi
 
-        touch "$donefile"
+        if [ "$task" != install -o ! "$DESTDIR" ]; then
+            touch "$donefile"
+        fi
         [ "$task" = "$target" ] && break
     done
     ;;
