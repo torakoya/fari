@@ -255,6 +255,8 @@ fr_do () {
 
 if [ "$SUDO_USER" ]; then
     homedir="$(eval echo ~"$SUDO_USER")"
+elif [ "$DOAS_USER" ]; then
+    homedir="$(eval echo ~"$DOAS_USER")"
 else
     homedir="$HOME"
 fi
