@@ -12,5 +12,9 @@ prefix=/usr/local
 install_strip=1
 install_gzip=1
 
+# Whether "install" implies "test" or not.
+# nonempty strings mean yes, an empty string means no
+test_required=
+
 # User-defined variables; used in recipes
 optflags=-O2

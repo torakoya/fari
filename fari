@@ -346,6 +346,12 @@ fetch|extract|patch|config|build|test|install)
     for task in fetch extract patch config build test install; do
         donefile="$workdir/.$task-done"
 
+        if [ "$task" = test ]; then
+            if [ "$target" != test ] && [ ! "$test_required" ]; then
+                continue
+            fi
+        fi
+
         if [ "$task" = install ]; then
             for s in "$@"; do
                 if [ "$s" != "${s#DESTDIR=}" ]; then
