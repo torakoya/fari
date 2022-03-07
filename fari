@@ -379,7 +379,7 @@ fetch|extract|patch|config|build|test|install)
         fi
 
         if [ "$task" != install -o ! "$DESTDIR" ]; then
-            touch "$donefile"
+            [ -e "$donefile" ] || touch "$donefile"
         fi
         [ "$task" = "$target" ] && break
     done
